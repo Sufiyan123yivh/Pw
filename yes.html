@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxy Video Player</title>
+  <!-- Include HLS.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+    video {
+      width: 90%;
+      max-width: 800px;
+      border: 2px solid #444;
+      border-radius: 6px;
+      background-color: #000;
+    }
+    #errorMessage {
+      margin-top: 1rem;
+      color: #f33;
+      display: none;
+    }
+    #loadingIndicator {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Proxy Video Player</h2>
+  <video id="videoPlayer" controls muted></video>
+  <div id="loadingIndicator">Loading...</div>
+  <div id="errorMessage">⚠️ Failed to load the video. Please check your connection or try again later.</div>
+
+  <script>
+    (function() {
+      const video = document.getElementById("videoPlayer");
+      const loading = document.getElementById("loadingIndicator");
+      const errorMsg = document.getElementById("errorMessage");
+
+      // The full proxy URL provided by the user:
+      const proxyUrl = "https://pw-api-75332756c41b.herokuapp.com/video/VWRheSBNUCAyMDI2IENsYXNzIDExdGggSGluZ2xpc2ggTWVkaXVtX19DaGVtaXN0cnlfX1NvbWUgYmFzaWMgY29uY2VwdHMgb2YgY2hlbWlzdHJ5X18w/480/main.m3u8";
+
+      // Show a loading indicator while we set up HLS
+      loading.style.display = "block";
+
+      function showError(message) {
+        loading.style.display = "none";
+        errorMsg.textContent = `⚠️ ${message}`;
+        errorMsg.style.display = "block";
+        console.error(message);
+      }
+
+      // Check if HLS.js is supported in this browser
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+
+        // Attach error handler for HLS.js events
+        hls.on(Hls.Events.ERROR, function(event, data) {
+          // HLS.js provides different levels of errors; we handle fatal ones
+          if (data.fatal) {
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                showError("Network error encountered while loading the video.");
+                hls.destroy();
+                break;
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                showError("Media decoding error encountered.");
+                hls.recoverMediaError();
+                break;
+              default:
+                showError("An unrecoverable error occurred in HLS playback.");
+                hls.destroy();
+                break;
+            }
+          }
+        });
+
+        // Once the manifest is parsed, hide loading indicator and attempt to play
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+          loading.style.display = "none";
+          video.play().catch(err => {
+            console.warn("Autoplay prevented or play() failed:", err);
+            // We leave the controls visible, so the user can click play manually
+          });
+        });
+
+        // Load the HLS playlist from the proxy URL
+        hls.loadSource(proxyUrl);
+        hls.attachMedia(video);
+      }
+      // If native HLS is supported (Safari, some mobile browsers), fall back
+      else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = proxyUrl;
+        video.addEventListener("loadedmetadata", function() {
+          loading.style.display = "none";
+          video.play().catch(err => {
+            console.warn("Autoplay prevented or play() failed:", err);
+          });
+        });
+      } 
+      // Neither HLS.js nor native HLS is supported
+      else {
+        showError("Your browser does not support HLS playback.");
+      }
+
+      // Additional HTML5 video error handling
+      video.addEventListener("error", function(e) {
+        let err = video.error;
+        if (!err) return;
+        loading.style.display = "none";
+
+        switch (err.code) {
+          case err.MEDIA_ERR_ABORTED:
+            showError("Video playback was aborted.");
+            break;
+          case err.MEDIA_ERR_NETWORK:
+            showError("A network error caused the video download to fail.");
+            break;
+          case err.MEDIA_ERR_DECODE:
+            showError("The video playback was aborted due to a corruption problem or unsupported features.");
+            break;
+          case err.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            showError("The video format is not supported or the video URL is invalid.");
+            break;
+          default:
+            showError("An unknown error occurred during video playback.");
+            break;
+        }
+      });
+
+      // Optional: If the video doesn’t start loading after a timeout, show an error
+      const loadTimeout = setTimeout(() => {
+        if (video.readyState === 0) {
+          showError("Video is still not loading after several seconds. Please reload the page.");
+        }
+      }, 10000); // 10 seconds
+
+      // Clear timeout when video begins loading
+      video.addEventListener("loadeddata", () => {
+        clearTimeout(loadTimeout);
+      });
+    })();
+  </script>
+</body>
+</html>

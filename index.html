@@ -119,7 +119,7 @@
 
       try {
         const res = await fetch(
-          `https://pw-api-smoky.vercel.app/data.json`
+          `https://pw-api-smoky.vercel.app/data/batches?limit=${batchLimit}&offset=${batchOffset`
         );
         const json = await res.json();
         totalBatches = json.total;

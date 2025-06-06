@@ -1,7 +1,7 @@
 <?php
 // API key aur destination URL define kar lete hain
-$apiKey = 'e70587d6251735344ef79f7b1a50df6ab6bcada5';
-$destinationUrl = 'https://pwthor.site/login-success.html';
+$apiKey = 'a106cacf591bbd0a818122a68ec01f01f210ddac';
+$destinationUrl = 'https://pwsufiyan.vercel.app/login-success.html;
 $alias = 'pw_thor'; // Optional alias
 
 // API URL ko prepare karte hain

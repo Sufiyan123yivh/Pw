@@ -1,408 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://www.pw.live/favicon.ico" rel="icon"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-   
-<script disable-devtool-auto="true" src="https://cdn.jsdelivr.net/npm/disable-devtool" clear-log="true"
-    disable-select="true" disable-copy="true" disable-cut="true" disable-paste="true"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <title>PW THOR</title>
-  <style>
-    body { margin: 0; font-family: 'Poppins', sans-serif; background: #0e0f1b; color: white; }
-    .header { background: #11132a; color: #ffc107; font-size: 1.8rem; text-transform: uppercase; padding: 1rem; text-align: center; font-weight: 600; }
-    .grid { display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem; justify-content: center; }
-    .card { background: #1e2036; padding: 1rem; border-radius: 10px; width: 250px; cursor: pointer; transition: 0.3s; }
-    .card:hover { background: #2a2e4b; transform: translateY(-5px); }
-    .card img { width: 100%; border-radius: 10px; }
-    .card-title { margin-top: 0.5rem; font-weight: bold; text-align: center; }
-    .section { padding: 1rem; }
-    .btn { background: linear-gradient(90deg, #ffc107, #ff9800); color: #111; font-weight: 600; padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none; }
-    .btn:hover { transform: scale(1.05); }
-    .hidden { display: none; }
-    input { background: #15162b; color: white; border: 1px solid #3a3d5c; padding: 0.6rem 1rem; font-size: 1rem; border-radius: 8px; width: 80%; max-width: 400px; }
-    .loader {
-      border: 6px solid rgba(255, 255, 255, 0.1);
-      border-top: 6px solid #ffc107;
-      border-radius: 50%;
-      width: 60px; height: 60px;
-      animation: spin 0.8s ease-in-out infinite;
-      margin: 2rem auto;
-      box-shadow: 0 0 15px #ffc10788;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server and Tutorial Page - Enhanced with Links</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for a clean look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to right bottom, #6a11cb, #2575fc); /* Vibrant gradient background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure it takes full viewport height */
+            margin: 0;
+            padding: 1rem; /* Add some padding for smaller screens */
+            /* REMOVE OR COMMENT OUT THIS LINE: overflow: hidden; */
+            /* If you want the gradient to cover the full scrollable area,
+               apply it to a pseudo-element or a fixed background container.
+               For simple scroll, just remove overflow: hidden;
+            */
+        }
+
+        /* Keyframe for a subtle fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in-element {
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0; /* Start invisible */
+        }
+
+        /* Delay animation for different elements */
+        .fade-in-delay-1 { animation-delay: 0.2s; }
+        .fade-in-delay-2 { animation-delay: 0.4s; }
+        .fade-in-delay-3 { animation-delay: 0.6s; }
+        .fade-in-delay-4 { animation-delay: 0.8s; }
+        .fade-in-delay-5 { animation-delay: 1.0s; } /* Added delay for tutorial button */
+
+        /* Custom button styles for a more dynamic look */
+        .btn-gradient {
+            background-image: linear-gradient(to right, var(--tw-gradient-stops));
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-gradient:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+        }
+        .btn-gradient:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Best Practice: Load Inter font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
+
+        /* NEW/MODIFIED STYLES FOR SCROLLABILITY */
+        body {
+            /* Remove or comment out 'overflow: hidden;' */
+            /* overflow: hidden; */ /* <--- REMOVE THIS LINE */
+
+            /* Adjust min-height and padding for better content flow on smaller screens */
+            min-height: 100vh; /* Keep for initial content placement */
+            padding-top: 2rem; /* Add more top/bottom padding */
+            padding-bottom: 2rem; /* Add more top/bottom padding */
+            
+            /* To ensure gradient covers full scrollable height: */
+            /* Remove `display: flex; justify-content: center; align-items: center;` from body */
+            /* Instead, center the content box within the body */
+            display: block; /* Change from flex to block */
+            text-align: center; /* Center block-level elements like the main container */
+        }
+
+        /* Center the content container within the now-block body */
+        .main-content-container { /* Add a new class to your main div, e.g., <div class="main-content-container bg-white ..."> */
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 30rem; /* Use a fixed max-width or keep your current max-w-md (28rem) */
+            /* Add this to your existing main div's classes or create a new div to wrap it */
+        }
+    </style>
 </head>
-<body>
+<body class="p-4">
+    <div class="main-content-container bg-white bg-opacity-90 backdrop-filter backdrop-blur-lg p-8 rounded-3xl shadow-2xl max-w-md w-full text-center space-y-8 transform scale-95 fade-in-element">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-6 drop-shadow-md fade-in-element fade-in-delay-1">
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
+             <B>RARESTUDY-GETAPKS</B>
+            </span>
+        </h1>
 
-  <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 1.5rem;">
-    <img src="ChatGPT Image May 7, 2025, 08_57_25 PM.png" alt="PW THOR Logo" style="height: 60px;" />
-    <h1 style="color: #ffc107; font-size: 2rem; margin: 0;">PW THOR</h1>
-  </div>
+        <div class="flex flex-col space-y-5">
+            <button
+                class="w-full text-white font-bold py-4 px-8 rounded-xl btn-gradient
+                       from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700
+                       focus:outline-none focus:ring-4 focus:ring-blue-300 fade-in-element fade-in-delay-2"
+                onclick="window.location.href='https://rarestudy.site/keyloginsuccess';"
+            >
+                <span class="text-lg">🚀 Server 1</span>
+            </button>
+            <button
+                class="w-full text-white font-bold py-4 px-8 rounded-xl btn-gradient
+                       from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700
+                       focus:outline-none focus:ring-4 focus:ring-green-300 fade-in-element fade-in-delay-3"
+                onclick="window.location.href='https://teraboxlinks.com/n2NbWqFi';"
+            >
+                <span class="text-lg">🌐 Server 2</span>
+            </button>
+        </div>
 
-  <div class="hidden" id="backBtn" style="padding: 1rem; cursor: pointer; color: gold; font-size: 1.2rem;">← Back</div>
+        <div class="my-8 relative">
+            <img
+                src="https://i.ibb.co/rKL3nWVL/x.jpg"
+                alt="Exploration Image"
+                class="w-full h-auto rounded-2xl shadow-xl object-cover border-4 border-white transform hover:scale-102 transition duration-300 ease-in-out fade-in-element fade-in-delay-4"
+                onerror="this.onerror=null;this.src='https://placehold.co/600x300/cccccc/333333?text=Image+Loading+Error';"
+            >
+            <p class="text-sm text-gray-600 mt-4 font-medium fade-in-element fade-in-delay-4">
+                Discover new possibilities and connect with our community.
+            </p>
+        </div>
 
-  <!-- SEARCH BAR -->
-  <div id="searchBarWrapper" style="padding: 1rem; text-align: center;">
-    <input id="searchInput" placeholder="Search batch by name…" autocomplete="off" />
-  </div>
-
-  <!-- LOADERS -->
-  <div id="batchLoader" class="loader hidden"></div>
-  <div id="subjectLoader" class="loader hidden"></div>
-  <div id="topicLoader" class="loader hidden"></div>
-
-  <!-- MAIN CONTAINERS -->
-  <div class="grid" id="main"></div>
-  <div class="grid hidden" id="subjects"></div>
-  <div class="section hidden" id="topics"></div>
-
-  <script>
-    let batchOffset = 0;
-    const batchLimit = 10;
-    let totalBatches = Infinity;
-    let isLoading = false;
-    let inSearchMode = false;
-
-    const main = document.getElementById('main');
-    const subjectsDiv = document.getElementById('subjects');
-    const topicsDiv = document.getElementById('topics');
-    const backBtn = document.getElementById('backBtn');
-    const searchBarWrapper = document.getElementById('searchBarWrapper');
-    const searchInput = document.getElementById('searchInput');
-
-    let currentView = 'main';
-    let prevState = [];
-
-    function showView(view) {
-      main.classList.add('hidden');
-      subjectsDiv.classList.add('hidden');
-      topicsDiv.classList.add('hidden');
-      searchBarWrapper.style.display = view === 'main' ? '' : 'none';
-      backBtn.classList.toggle('hidden', view === 'main');
-      currentView = view;
-      if (view === 'main') main.classList.remove('hidden');
-      else if (view === 'subjects') subjectsDiv.classList.remove('hidden');
-      else if (view === 'topics') topicsDiv.classList.remove('hidden');
-    }
-
-    backBtn.onclick = () => {
-      const lastView = prevState.pop();
-      if (lastView) showView(lastView);
-    };
-
-    // Append a single batch card to #main
-    function appendBatchCard(batchData) {
-      const div = document.createElement('div');
-      div.className = 'card';
-      div.innerHTML = `
-        <img src="${batchData.image}" alt="${batchData.name}">
-        <div class="card-title">${batchData.name}</div>
-      `;
-      div.onclick = () => {
-        prevState.push(currentView);
-        loadSubjects(batchData.key);
-      };
-      main.appendChild(div);
-    }
-
-    // Fetch and render next page of batches
-    async function loadBatches() {
-      if (batchOffset >= totalBatches || isLoading) return;
-      isLoading = true;
-      document.getElementById('batchLoader').classList.remove('hidden');
-
-      try {
-        const res = await fetch(
-          `https://pw-api-smoky.vercel.app/data/batches?limit=${batchLimit}&offset=${batchOffset`
-        );
-        const json = await res.json();
-        totalBatches = json.total;
-
-        json.batches.forEach(batchData => {
-          appendBatchCard(batchData);
-        });
-        batchOffset += batchLimit;
-      } catch (err) {
-        console.error('Error fetching batches page:', err);
-      } finally {
-        isLoading = false;
-        document.getElementById('batchLoader').classList.add('hidden');
-      }
-    }
-
-    // Load subjects for a batch
-    async function loadSubjects(batchId) {
-      document.getElementById('subjectLoader').classList.remove('hidden');
-      showView('subjects');
-      subjectsDiv.innerHTML = '';
-
-      const res = await fetch(`https://pw-api-smoky.vercel.app/data/batches/${batchId}/subjects`);
-      const { subjects } = await res.json();
-
-      document.getElementById('subjectLoader').classList.add('hidden');
-      subjects.forEach(subject => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `<div class="card-title">${subject.name}</div>`;
-        div.onclick = () => {
-          prevState.push(currentView);
-          loadTopics(batchId, subject.key);
-        };
-        subjectsDiv.appendChild(div);
-      });
-    }
-
-    // Load topics for a subject
-    async function loadTopics(batchId, subjectId) {
-      document.getElementById('topicLoader').classList.remove('hidden');
-      showView('topics');
-      topicsDiv.innerHTML = '';
-
-      const res = await fetch(`https://pw-api-smoky.vercel.app/data/batches/${batchId}/subjects/${subjectId}/topics`);
-      const { topics } = await res.json();
-
-      const topicButtonsContainer = document.createElement('div');
-      topicButtonsContainer.className = 'grid';
-      const topicContent = document.createElement('div');
-      topicContent.className = 'section';
-
-      if (!topics.length) {
-        topicButtonsContainer.innerHTML = `
-          <div style="color: gold; text-align: center; font-size: 1.2rem; margin-top: 2rem;">
-            🚫 No lectures, notes, or DPPs are available for this subject.
-          </div>`;
-      } else {
-        topics.forEach(topic => {
-          const button = document.createElement('div');
-          button.className = 'card';
-          button.innerHTML = `<div class="card-title">${topic.name}</div>`;
-          button.onclick = () => {
-            topicButtonsContainer.style.display = 'none';
-
-            const tabs = `
-              <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
-                <button class="btn" onclick="switchTab('lectures')">Lectures</button>
-                <button class="btn" onclick="switchTab('notes')">Notes</button>
-                <button class="btn" onclick="switchTab('dpps')">DPPs</button>
-              </div>
-            `;
-
-            topicContent.innerHTML = `<h2>${topic.name}</h2>` + tabs;
-
-            const lecturesHtml = (topic.lectures || []).map(lecture => {
-  const lectureNotes = (lecture.notes || []).map(note => `
-    <div style="margin-top: 0.5rem;">
-      <a href="${note.fileUrl}" target="_blank" class="btn">${note.title}</a>
+        <div>
+            <button
+                class="w-full text-white font-bold py-4 px-8 rounded-xl btn-gradient
+                       from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700
+                       focus:outline-none focus:ring-4 focus:ring-purple-300 fade-in-element fade-in-delay-5"
+                onclick="window.location.href='https://www.example.com/tutorial';"
+            >
+                <span class="text-lg">📚 HOW TO USE - Tutorial</span>
+            </button>
+        </div>
     </div>
-  `).join('');
-
-  const lectureDpps = (lecture.dpps || []).map(dpp => `
-    <div style="margin-top: 0.5rem;">
-      <a href="${dpp.fileUrl}" target="_blank" class="btn">${dpp.title}</a>
-    </div>
-  `).join('');
-
-  return `
-    <div style="margin-bottom: 2rem;">
-      <a href="video.php?videoUrl=${encodeURIComponent(lecture.videoUrl)}&videoUrl1=${encodeURIComponent(lecture.videoUrl1)}&videoUrl2=${encodeURIComponent(lecture.videoUrl2)}&videoUrl3=${encodeURIComponent(lecture.videoUrl3)}&title=${encodeURIComponent(lecture.title)}">
-
-        <img src="${lecture.thumbnail}" style="width:100%; max-width:400px; border-radius:10px; display:block; margin:1rem auto;" />
-      </a>
-      <div style="text-align:center;">${lecture.title}</div>
-      ${lectureNotes}
-      ${lectureDpps}
-    </div>
-  `;
-}).join('');
-
-
-            const notesHtml = (topic.notes || []).map(note => `
-              <div style="margin-top: 1rem;">
-                <a href="${note.fileUrl}" target="_blank" class="btn">${note.title}</a>
-              </div>`).join('');
-
-            const dppsHtml = (topic.dpps || []).map(dpp => `
-              <div style="margin-top: 1rem;">
-                <a href="${dpp.fileUrl}" target="_blank" class="btn">${dpp.title}</a>
-              </div>`).join('');
-
-            topicContent.innerHTML += `
-              <div id="lecturesTab">${lecturesHtml}</div>
-              <div id="notesTab" style="display:none;">${notesHtml}</div>
-              <div id="dppsTab" style="display:none;">${dppsHtml}</div>
-            `;
-
-            window.switchTab = function(tabName) {
-              document.getElementById('lecturesTab').style.display = tabName === 'lectures' ? 'block' : 'none';
-              document.getElementById('notesTab').style.display = tabName === 'notes' ? 'block' : 'none';
-              document.getElementById('dppsTab').style.display = tabName === 'dpps' ? 'block' : 'none';
-            };
-          };
-          topicButtonsContainer.appendChild(button);
-        });
-      }
-
-      topicsDiv.appendChild(topicButtonsContainer);
-      topicsDiv.appendChild(topicContent);
-      document.getElementById('topicLoader').classList.add('hidden');
-    }
-
-    // Clear main grid
-    function clearMainGrid() {
-      while (main.firstChild) {
-        main.removeChild(main.firstChild);
-      }
-    }
-
-    // Handle search input
-    async function handleSearchEvent() {
-      // 1. Grab the *current* value of the input, lower‐cased/trimmed
-      const term = searchInput.value.trim().toLowerCase();
-
-      // 2. If the box is now empty, switch back to “infinite scroll” mode:
-      if (!term) {
-        inSearchMode = false;
-        clearMainGrid();
-        batchOffset = 0;
-        loadBatches();
-        return;
-      }
-
-      // 3. Otherwise, we are in search mode. Clear out any older cards:
-      inSearchMode = true;
-      clearMainGrid();
-      document.getElementById('batchLoader').classList.remove('hidden');
-
-      // 4. Capture this search‐term so we can detect stale responses:
-      const thisSearch = term;
-
-      try {
-        // 5. Fetch from the server using the query
-        const res = await fetch(
-          `https://pw-api-smoky.vercel.app/data/batches/search?q=${encodeURIComponent(thisSearch)}`
-        );
-        const json = await res.json(); // { results: [ { key, name, image }, … ] }
-
-        // Right after we get a response, hide the loader.
-        document.getElementById('batchLoader').classList.add('hidden');
-
-        // 6. If the user has already changed the input since we fired off this request,
-        //    we should do nothing (i.e. don’t append outdated cards).
-        const currentTerm = searchInput.value.trim().toLowerCase();
-        if (currentTerm !== thisSearch) {
-          // The input no longer matches; drop these results.
-          return;
-        }
-
-        // 7. Now that we know the term is still valid, render:
-        if (!json.results.length) {
-          main.innerHTML = `
-            <div style="color: gold; text-align: center; font-size: 1.2rem; margin-top: 2rem;">
-              🤷‍♂️ No batches found matching “${searchInput.value.trim()}”
-            </div>`;
-        } else {
-          json.results.forEach(batchData => {
-            appendBatchCard(batchData);
-          });
-        }
-      } catch (err) {
-        console.error('Search error:', err);
-        document.getElementById('batchLoader').classList.add('hidden');
-        main.innerHTML = '<p style="color: red; text-align: center;">Error fetching search results.</p>';
-      }
-    }
-
-    // Infinite scroll for pagination
-    window.addEventListener('scroll', () => {
-      if (currentView !== 'main' || isLoading || inSearchMode) return;
-      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
-        loadBatches();
-      }
-    });
-
-    // Wire up search input
-    searchInput.addEventListener('input', () => {
-      handleSearchEvent();
-    });
-
-    // Initial load
-    document.addEventListener('DOMContentLoaded', () => {
-      loadBatches();
-    });
-  </script>
-
-  <!-- Popup logic (unchanged) -->
-  <div id="popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      background: #1e2036; color: white; padding: 20px; box-shadow: 0 0 20px #ffc10766; z-index: 9999; width: 320px; border-radius: 12px; text-align: center;">
-    <button onclick="document.getElementById('popup').style.display='none'" 
-      style="position: absolute; top: 5px; right: 10px; background: transparent; border: none; font-size: 20px; color: white;">&times;</button>
-    <img id="popupImage" src="" alt="Popup Image" style="max-width: 100%; height: auto; border-radius: 8px;">
-    <p id="popupText" style="margin: 15px 0;"></p>
-    <a id="popupLink" href="#" target="_blank" 
-       style="display: inline-block; padding: 10px 15px; background-color: #ffc107; color: #111; font-weight: bold; text-decoration: none; border-radius: 5px;">
-       Join Telegram
-    </a>
-  </div>
-
-  <!-- …existing HTML popup markup (id="popup", popupImage, popupText, popupLink) … -->
-
-<script>
-  // Put popup.json at the same level as your index.html (for instance)
-  fetch('/popup.json')
-    .then(res => res.json())
-    .then(popup => {
-      if (popup.show) {
-        document.getElementById('popupImage').src = popup.image;
-        document.getElementById('popupText').textContent = popup.text;
-        document.getElementById('popupLink').href = popup.link;
-        document.getElementById('popup').style.display = 'block';
-      }
-    })
-    .catch(err => console.error('Error loading popup data:', err));
-</script>
-
-
-  <script>
-    // Disable right-click and DevTools (unchanged)
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    document.addEventListener('keydown', function (event) {
-      if (
-        event.key === "F12" ||
-        (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'J')) ||
-        (event.ctrlKey && event.key === 'U')
-      ) {
-        event.preventDefault();
-      }
-    });
-    (function() {
-      const element = new Image();
-      Object.defineProperty(element, 'id', {
-        get: function() {
-          document.location.href = 'about:blank';
-        }
-      });
-      console.log(element);
-    })();
-  </script>
-
-  <a href="https://t.me/pwthor_support" target="_blank" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
-    <img src="download.png" alt="Telegram Support" style="width: 50px; height: 50px; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-  </a>
-
-  <script>
-    function playVideo(videoUrl, title) {
-  const encodedUrl = encodeURIComponent(videoUrl);
-  const encodedTitle = encodeURIComponent(title);
-  window.location.href = `video.php?videoUrl=${encodedUrl}&title=${encodedTitle}`;
-}
-
-  </script>
-
 </body>
 </html>

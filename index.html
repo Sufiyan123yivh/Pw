@@ -1,1 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server and Tutorial Page - Enhanced with Links</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for a clean look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to right bottom, #6a11cb, #2575fc); /* Vibrant gradient background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure it takes full viewport height */
+            margin: 0;
+            padding: 1rem; /* Add some padding for smaller screens */
+            /* REMOVE OR COMMENT OUT THIS LINE: overflow: hidden; */
+            /* If you want the gradient to cover the full scrollable area,
+               apply it to a pseudo-element or a fixed background container.
+               For simple scroll, just remove overflow: hidden;
+            */
+        }
 
+        /* Keyframe for a subtle fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in-element {
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0; /* Start invisible */
+        }
+
+        /* Delay animation for different elements */
+        .fade-in-delay-1 { animation-delay: 0.2s; }
+        .fade-in-delay-2 { animation-delay: 0.4s; }
+        .fade-in-delay-3 { animation-delay: 0.6s; }
+        .fade-in-delay-4 { animation-delay: 0.8s; }
+        .fade-in-delay-5 { animation-delay: 1.0s; } /* Added delay for tutorial button */
+
+        /* Custom button styles for a more dynamic look */
+        .btn-gradient {
+            background-image: linear-gradient(to right, var(--tw-gradient-stops));
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-gradient:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+        }
+        .btn-gradient:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Best Practice: Load Inter font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
+
+        /* NEW/MODIFIED STYLES FOR SCROLLABILITY */
+        body {
+            /* Remove or comment out 'overflow: hidden;' */
+            /* overflow: hidden; */ /* <--- REMOVE THIS LINE */
+
+            /* Adjust min-height and padding for better content flow on smaller screens */
+            min-height: 100vh; /* Keep for initial content placement */
+            padding-top: 2rem; /* Add more top/bottom padding */
+            padding-bottom: 2rem; /* Add more top/bottom padding */
+            
+            /* To ensure gradient covers full scrollable height: */
+            /* Remove `display: flex; justify-content: center; align-items: center;` from body */
+            /* Instead, center the content box within the body */
+            display: block; /* Change from flex to block */
+            text-align: center; /* Center block-level elements like the main container */
+        }
+
+        /* Center the content container within the now-block body */
+        .main-content-container { /* Add a new class to your main div, e.g., <div class="main-content-container bg-white ..."> */
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 30rem; /* Use a fixed max-width or keep your current max-w-md (28rem) */
+            /* Add this to your existing main div's classes or create a new div to wrap it */
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="main-content-container bg-white bg-opacity-90 backdrop-filter backdrop-blur-lg p-8 rounded-3xl shadow-2xl max-w-md w-full text-center space-y-8 transform scale-95 fade-in-element">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-6 drop-shadow-md fade-in-element fade-in-delay-1">
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
+             <B>RARESTUDY-GETAPKS</B>
+            </span>
+        </h1>
+
+        <div class="flex flex-col space-y-5">
+            <button
+                class="w-full text-white font-bold py-4 px-8 rounded-xl btn-gradient
+                       from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700
+                       focus:outline-none focus:ring-4 focus:ring-blue-300 fade-in-element fade-in-delay-2"
+                onclick="window.location.href='https://rarestudy.site/keyloginsuccess';"
+            >
+                <span class="text-lg">🚀 Server 1</span>
+            </button>
+            <button
+                class="w-full text-white font-bold py-4 px-8 rounded-xl btn-gradient
+                       from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700
+                       focus:outline-none focus:ring-4 focus:ring-green-300 fade-in-element fade-in-delay-3"
+                onclick="window.location.href='https://teraboxlinks.com/n2NbWqFi';"
+            >
+                <span class="text-lg">🌐 Server 2</span>
+            </button>
+        </div>
+
+        <div class="my-8 relative">
+            <img
+                src="https://i.ibb.co/rKL3nWVL/x.jpg"
+                alt="Exploration Image"
+                class="w-full h-auto rounded-2xl shadow-xl object-cover border-4 border-white transform hover:scale-102 transition duration-300 ease-in-out fade-in-element fade-in-delay-4"
+                onerror="this.onerror=null;this.src='https://placehold.co/600x300/cccccc/333333?text=Image+Loading+Error';"
+            >
+            <p class="text-sm text-gray-600 mt-4 font-medium fade-in-element fade-in-delay-4">
+                Discover new possibilities and connect with our community.
+            </p>
+        </div>
+
+        <div>
+            <button
+                class="w-full text-white font-bold py-4 px-8 rounded-xl btn-gradient
+                       from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700
+                       focus:outline-none focus:ring-4 focus:ring-purple-300 fade-in-element fade-in-delay-5"
+                onclick="window.location.href='https://www.example.com/tutorial';"
+            >
+                <span class="text-lg">📚 HOW TO USE - Tutorial</span>
+            </button>
+        </div>
+    </div>
+</body>
+</html>

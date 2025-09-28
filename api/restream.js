@@ -1,5 +1,5 @@
 // /api/restream.js
-const SOURCE_URL = "https://billatv.pages.dev/Testing.txt";
+const SOURCE_URL = "https://getapks.pages.dev/sonyliv";
 let CHANNELS = null;
 
 // Load channels from playlist

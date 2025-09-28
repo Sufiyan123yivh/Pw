@@ -1,0 +1,9 @@
+{
+  "name": "hls-proxy",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "api/proxy.js",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}

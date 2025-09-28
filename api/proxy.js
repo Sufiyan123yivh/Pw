@@ -1,5 +1,9 @@
 import fetch from "node-fetch";
 
+// Fixed User-Agent
+const FIXED_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
+
 export default async function handler(req, res) {
   const { url } = req.query;
   if (!url) return res.status(400).send("Missing url parameter");
@@ -7,7 +11,7 @@ export default async function handler(req, res) {
   try {
     const upstream = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0",
+        "User-Agent": FIXED_UA,
         "Accept": "*/*",
       },
       redirect: "follow",
@@ -27,7 +31,7 @@ export default async function handler(req, res) {
       const playlist = await upstream.text();
       const baseUrl = new URL(url);
 
-      // Rewrite ALL absolute/relative URLs in playlist
+      // Rewrite all URLs inside playlist
       const proxied = playlist.replace(/^(?!#)(.*)$/gm, (line) => {
         if (line.startsWith("#")) return line;
         const absUrl = new URL(line, baseUrl).toString();

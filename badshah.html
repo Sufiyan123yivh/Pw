@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Badshah Modz Bypass</title>
     <style>
+        /* (your existing styles unchanged) */
+        /* ... copy the entire CSS from your original file here ... */
+        /* For brevity in this example I'll keep the same selectors as you provided. */
         body {
             box-sizing: border-box;
             margin: 0;
@@ -19,7 +22,7 @@
             overflow-x: hidden;
             position: relative;
         }
-
+        /* (rest of your CSS) */
         body::before {
             content: '';
             position: fixed;
@@ -27,20 +30,19 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
             z-index: -1;
         }
-
         .container {
             background: rgba(13, 17, 23, 0.8);
             border: 1px solid rgba(48, 54, 61, 0.8);
             border-radius: 12px;
             padding: 24px;
             backdrop-filter: blur(20px);
-            box-shadow: 
+            box-shadow:
                 0 8px 32px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
             text-align: center;
@@ -51,14 +53,13 @@
             animation: slideInUp 1.5s ease-out forwards;
             position: relative;
         }
-
+        /* keep rest of your CSS as-is... */
         @keyframes slideInUp {
             to {
                 transform: translateY(0);
                 opacity: 1;
             }
         }
-
         .entering-text {
             position: fixed;
             top: 50%;
@@ -77,34 +78,179 @@
             border-right: 3px solid #4ecdc4;
             z-index: 1000;
         }
+        /* (skip other repeated CSS here - keep them from your original) */
 
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        /* New UI helpers */
+        #resultBox {
+            margin-top: 16px;
+            padding: 10px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #c9d1d9;
+            display: none;
+            word-break: break-word;
+            text-align: left;
+        }
+        #iframeWrapper {
+            margin-top: 16px;
+            width: 100%;
+            display: none;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(48,54,61,0.5);
+        }
+        #verifyIframe {
+            width: 100%;
+            height: 480px;
+            border: 0;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="entering-text" id="enteringText">
+        BADSHAH MODZ BYPASS HERE
+    </div>
+
+    <div class="container">
+        <h1 class="title">🔓 Badshah Modz</h1>
+        <p class="subtitle">Load image and bypass with custom URL</p>
+        
+        <div class="image-container">
+            <img class="main-image" src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop&crop=center" alt="Badshah Modz Bypass Tool" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJiZ0dyYWRpZW50IiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNThhNmZmO3N0b3Atb3BhY2l0eTowLjgiIC8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmNzgxNjY7c3RvcC1vcGFjaXR5OjAuNiIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3OWMwZmY7c3RvcC1vcGFjaXR5OjAuOCIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgcng9IjEyIiBmaWxsPSJ1cmwoI2JnR3JhZGllbnQpIiBvcGFjaXR5PSIwLjMiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIxMjAiIHI9IjQwIiBmaWxsPSIjNThhNmZmIiBvcGFjaXR5PSIwLjgiLz48cG9seWdvbiBwb2ludHM9IjEyMCwyMDAgMjAwLDE0MCAyODAsMjAwIDM2MCwxNDAgMzYwLDI2MCA0MCwyNjAiIGZpbGw9IiM3OWMwZmYiIG9wYWNpdHk9IjAuNiIvPjx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjYzlkMWQ5IiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iNjAwIiBmb250LWZhbWlseT0iSmV0QnJhaW5zIE1vbm8iPkJBRFNIQUggTU9EWjwvdGV4dD48dGV4dCB4PSIyMDAiIHk9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNThhNmZmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNTAwIiBvcGFjaXR5PSIwLjgiPlBST0ZFU1NJT05BTCBCWVBBU1MgVE9PTDwvdGV4dD48L3N2Zz4='; this.alt='Badshah Modz Professional Tool';">
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Available</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Unlimited</div>
+            </div>
+        </div>
+        
+        <button id="bypassBtn" class="bypass-button" onclick="bypassUrl()">
+            <span class="button-icon">🚀</span>
+            <span class="button-text">INITIATE BYPASS</span>
+        </button>
+
+        <!-- result area (shows friendly messages returned by the server) -->
+        <div id="resultBox" role="status" aria-live="polite"></div>
+
+        <!-- iframe area (used when we can't fetch due to CORS or server returned HTML) -->
+        <div id="iframeWrapper">
+            <iframe id="verifyIframe" sandbox="allow-scripts allow-forms allow-popups"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // URL of your Pages Function
+        const VERIFY_URL = 'https://getapks.pages.dev/verify-redirect';
+
+        // Helper: show message in result box
+        function showResult(msg, isError = false) {
+            const rb = document.getElementById('resultBox');
+            rb.style.display = 'block';
+            rb.style.color = isError ? '#ffb3b3' : '#c9d1d9';
+            rb.textContent = typeof msg === 'string' ? msg : JSON.stringify(msg, null, 2);
         }
 
-        @keyframes typeWriter {
-            from { width: 0; }
-            to { width: 100%; }
+        // Helper: hide result and iframe
+        function clearDisplays() {
+            document.getElementById('resultBox').style.display = 'none';
+            document.getElementById('iframeWrapper').style.display = 'none';
+            document.getElementById('verifyIframe').src = 'about:blank';
         }
 
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                visibility: hidden;
+        async function bypassUrl() {
+            const button = document.getElementById('bypassBtn');
+            const originalText = button.innerHTML;
+            clearDisplays();
+
+            // Loading UI
+            button.innerHTML = '<span class="button-icon">⚡</span><span class="button-text">BYPASSING...</span>';
+            button.disabled = true;
+
+            // Try to fetch the function first — if CORS allows, we can read JSON responses.
+            // If fetch fails due to CORS or network, fall back to iframe.
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 6000); // 6s timeout
+
+                const res = await fetch(VERIFY_URL, {
+                    method: 'GET',
+                    mode: 'cors', // request CORS; server must allow origin
+                    credentials: 'include', // include cookies if any
+                    signal: controller.signal
+                });
+                clearTimeout(timeout);
+
+                const contentType = res.headers.get('content-type') || '';
+
+                if (contentType.includes('application/json')) {
+                    // Server returned JSON (blocked/limit/etc). Show friendly message.
+                    const data = await res.json();
+                    if (data.status === 'key already generated') {
+                        showResult('Key already generated — you have reached the daily limit.', false);
+                    } else if (data.status === 'key generation not started yet') {
+                        showResult('Key generation not started yet. Access is restricted or referer invalid.', true);
+                    } else {
+                        showResult(data, false);
+                    }
+                } else if (contentType.includes('text/html')) {
+                    // Server returned HTML -> serve it in iframe (best UX)
+                    showIframe();
+                } else {
+                    // Unknown content-type: try to read text; if it looks like JSON, parse it
+                    const text = await res.text();
+                    try {
+                        const maybeJson = JSON.parse(text);
+                        showResult(maybeJson, false);
+                    } catch (e) {
+                        // not JSON, assume HTML -> show iframe
+                        showIframe();
+                    }
+                }
+            } catch (err) {
+                // Likely CORS or network error — fallback to iframe
+                console.warn('Fetch failed or blocked (CORS?), falling back to iframe:', err);
+                showIframe();
             }
+
+            // reset button after a short delay
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 1500);
         }
 
-        .title {
-            background: linear-gradient(135deg, #58a6ff, #f78166, #79c0ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-            font-size: 24px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        function showIframe() {
+            const wrapper = document.getElementById('iframeWrapper');
+            const iframe = document.getElementById('verifyIframe');
+            // set src to the verify URL (browser will send Referer automatically)
+            iframe.src = VERIFY_URL;
+            wrapper.style.display = 'block';
+            showResult('Loaded in iframe — if you see a blank area the target may block framing.', false);
+        }
+
+        // Auto-hide entering text after animation
+        setTimeout(() => {
+            const enteringText = document.getElementById('enteringText');
+            if (enteringText) enteringText.style.display = 'none';
+        }, 5000);
+    </script>
+
+    <!-- keep your existing invisible iframe script if you need it -->
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98828c50243e7a04',t:'MTc1OTM5MDc4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
             position: relative;
         }
 

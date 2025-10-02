@@ -1,110 +1,663 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Badshah Modz Bypass</title>
-<style>
-    body {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: 'JetBrains Mono', monospace;
-        background: #0d1117;
-        color: #c9d1d9;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow-x: hidden;
-        position: relative;
-    }
-    body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background:
-            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
-        z-index: -1;
-    }
-    .container {
-        background: rgba(13,17,23,0.8);
-        border: 1px solid rgba(48,54,61,0.8);
-        border-radius: 12px;
-        padding: 24px;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-    }
-    .entering-text { 
-        position: fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-        font-size: 2.5rem; font-weight:900;
-        background: linear-gradient(45deg,#ff6b6b,#4ecdc4,#45b7d1,#96ceb4);
-        background-size: 400% 400%;
-        -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-        animation: fadeOut 1s ease-in-out 4s forwards;
-        white-space: nowrap; overflow:hidden; border-right:3px solid #4ecdc4;
-        z-index:1000;
-    }
-    @keyframes fadeOut { to { opacity:0; visibility:hidden; } }
-    .bypass-button { padding:12px 24px; border:none; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer; background:linear-gradient(135deg,#f78166 0%,#fd7e14 100%); color:#fff; }
-    #resultBox { margin-top:12px; padding:10px; background:rgba(255,255,255,0.03); border-radius:6px; font-size:13px; display:none; word-break:break-word; }
-    #iframeWrapper { margin-top:12px; width:100%; display:none; border-radius:8px; overflow:hidden; border:1px solid rgba(48,54,61,0.5); }
-    #verifyIframe { width:100%; height:480px; border:0; display:block; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badshah Modz Bypass v5.0</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode {
+            background: #f6f8fa;
+            color: #24292f;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            animation: backgroundPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .version-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #58a6ff, #79c0ff);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
+            z-index: 1000;
+            animation: versionGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes versionGlow {
+            0% { box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3); }
+            100% { box-shadow: 0 4px 20px rgba(88, 166, 255, 0.6); }
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(22, 27, 34, 0.8);
+            border: 1px solid rgba(48, 54, 61, 0.6);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 20px;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
+        }
+
+        .container {
+            background: rgba(13, 17, 23, 0.9);
+            border: 1px solid rgba(48, 54, 61, 0.8);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(25px);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            transform: translateY(100px);
+            opacity: 0;
+            animation: slideInUp 1.8s ease-out forwards;
+            position: relative;
+        }
+
+        body.light-mode .container {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(209, 213, 219, 0.8);
+            color: #24292f;
+        }
+
+        @keyframes slideInUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .entering-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+            background-size: 500% 500%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite, typeWriter 4s steps(25) forwards, fadeOut 1s ease-in-out 5s forwards;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #4ecdc4;
+            z-index: 1000;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes typeWriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .title {
+            background: linear-gradient(135deg, #58a6ff, #f78166, #79c0ff, #feca57);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            font-size: 26px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            animation: titleGradient 4s ease-in-out infinite;
+        }
+
+        @keyframes titleGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #58a6ff, #f78166, #79c0ff);
+            border-radius: 2px;
+            animation: underlineGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes underlineGlow {
+            0% { box-shadow: 0 0 5px rgba(88, 166, 255, 0.5); }
+            100% { box-shadow: 0 0 15px rgba(88, 166, 255, 0.8); }
+        }
+
+        .subtitle {
+            color: #8b949e;
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.9;
+            animation: subtitleFade 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes subtitleFade {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .image-container {
+            position: relative;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(22, 27, 34, 0.6);
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(48, 54, 61, 0.6);
+            box-shadow: 
+                0 8px 24px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .image-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .main-image {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+
+
+
+        .button-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .bypass-button {
+            background: linear-gradient(135deg, #f78166 0%, #fd7e14 100%);
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(247, 129, 102, 0.4);
+            border: 1px solid rgba(247, 129, 102, 0.5);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 16px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: rgba(22, 27, 34, 0.5);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #58a6ff, #f78166, #79c0ff);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-4px);
+            border-color: rgba(88, 166, 255, 0.5);
+            box-shadow: 0 8px 20px rgba(88, 166, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: 800;
+            color: #58a6ff;
+            margin-bottom: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(13, 17, 23, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 12px;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(48, 54, 61, 0.6);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #58a6ff, #79c0ff);
+            width: 0%;
+            animation: progressFill 2s ease-in-out;
+        }
+
+        @keyframes progressFill {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .loading-text {
+            color: #58a6ff;
+            font-weight: 600;
+            font-size: 14px;
+            animation: loadingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .iframe-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .iframe-container.active {
+            display: flex;
+        }
+
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            height: 90%;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .iframe-header {
+            background: linear-gradient(135deg, #58a6ff, #79c0ff);
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #ffffff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .bypass-iframe {
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .entering-text {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 24px 20px;
+                margin: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .title {
+                font-size: 22px;
+                letter-spacing: 1px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .version-badge, .theme-toggle {
+                position: absolute;
+                top: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="entering-text" id="enteringText">BADSHAH MODZ BYPASS HERE</div>
+    <div class="version-badge">v5.0 PRO</div>
+    <div class="theme-toggle" onclick="toggleTheme()">🌙</div>
 
-<div class="container">
-    <h1>🔓 Badshah Modz</h1>
-    <button id="bypassBtn" class="bypass-button" onclick="bypassUrl()">INITIATE BYPASS</button>
-    <div id="resultBox"></div>
-    <div id="iframeWrapper"><iframe id="verifyIframe" sandbox="allow-scripts allow-forms allow-popups"></iframe></div>
-</div>
+    <div class="entering-text" id="enteringText">
+        BADSHAH MODZ BYPASS v5.0 HERE
+    </div>
 
-<script>
-const VERIFY_URL = 'https://getapks.pages.dev/verify-redirect';
+    <div class="container">
+        <h1 class="title">🔓 Badshah Modz v5</h1>
+        <p class="subtitle">Professional Bypass Tool - Enhanced Edition</p>
+        
 
-function showResult(msg, isError=false){
-    const rb = document.getElementById('resultBox');
-    rb.style.display='block';
-    rb.style.color=isError?'#ffb3b3':'#c9d1d9';
-    rb.textContent=msg;
-}
-function clearDisplays(){
-    document.getElementById('resultBox').style.display='none';
-    const wrapper=document.getElementById('iframeWrapper');
-    wrapper.style.display='none';
-    document.getElementById('verifyIframe').src='about:blank';
-}
-async function bypassUrl(){
-    const button=document.getElementById('bypassBtn');
-    const originalText=button.innerHTML;
-    clearDisplays();
-    button.innerHTML='BYPASSING...';
-    button.disabled=true;
+        
+        <div class="image-container">
+            <img class="main-image" id="mainImage" src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop&crop=center" alt="Badshah Modz Bypass Tool v5">
+            
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="loading-text">Loading image...</div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number" id="successRate">99.9%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="uptime">24/7</div>
+                <div class="stat-label">Available</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="unlimited">∞</div>
+                <div class="stat-label">Unlimited</div>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button class="btn bypass-button" onclick="bypassUrl()">
+                <span>🚀</span>
+                <span>INITIATE BYPASS</span>
+            </button>
+        </div>
+    </div>
 
-    try{
-        const res = await fetch(VERIFY_URL,{ method:'GET', mode:'cors', credentials:'include' });
-        const ct=res.headers.get('content-type')||'';
-        if(ct.includes('application/json')){
-            const data=await res.json();
-            if(data.status==='key already generated') showResult('Key already generated — daily limit reached.',false);
-            else if(data.status==='key generation not started yet') showResult('Key generation not started yet or referer invalid.',true);
-            else showResult(JSON.stringify(data),false);
-        }else{
-            showIframe();
+    <div class="iframe-container" id="iframeContainer">
+        <div class="iframe-wrapper">
+            <div class="iframe-header">
+                <span>🔓 Badshah Modz Bypass - Verification</span>
+                <button class="close-btn" onclick="closeIframe()">×</button>
+            </div>
+            <iframe class="bypass-iframe" id="bypassIframe" src="" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+        </div>
+    </div>
+
+    <script>
+        let darkMode = true;
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            darkMode = !darkMode;
+            
+            if (darkMode) {
+                body.classList.remove('light-mode');
+                themeToggle.textContent = '🌙';
+            } else {
+                body.classList.add('light-mode');
+                themeToggle.textContent = '☀️';
+            }
         }
-    }catch(err){ 
-        console.warn('Fetch failed, fallback to iframe:',err);
+
+
+
+        function bypassUrl() {
+            const button = document.querySelector('.bypass-button');
+            const originalText = button.innerHTML;
+            const iframeContainer = document.getElementById('iframeContainer');
+            const bypassIframe = document.getElementById('bypassIframe');
+            
+            // Show loading state
+            button.innerHTML = '<span>⚡</span><span>BYPASSING...</span>';
+            button.disabled = true;
+            button.style.background = 'linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)';
+            
+            // Simulate bypass process with enhanced animation
+            setTimeout(() => {
+                button.innerHTML = '<span>✅</span><span>LOADING VERIFICATION</span>';
+                button.style.background = 'linear-gradient(135deg, #2ed573 0%, #1e90ff 100%)';
+                
+                // Show iframe with the specified URL
+                bypassIframe.src = 'https://getapks.pages.dev/verify-redirect';
+                iframeContainer.classList.add('active');
+                
+                // Reset button after delay
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    button.style.background = 'linear-gradient(135deg, #f78166 0%, #fd7e14 100%)';
+                }, 2000);
+            }, 2000);
+        }
+
+        function closeIframe() {
+            const iframeContainer = document.getElementById('iframeContainer');
+            const bypassIframe = document.getElementById('bypassIframe');
+            
+            iframeContainer.classList.remove('active');
+            bypassIframe.src = '';
+        }
+        
+        // Enhanced stats animation
+        function animateStats() {
+            const stats = [
+                { element: document.getElementById('successRate'), target: '99.9%' },
+                { element: document.getElementById('uptime'), target: '24/7' },
+                { element: document.getElementById('unlimited'), target: '∞' }
+            ];
+            
+            stats.forEach((stat, index) => {
+                setTimeout(() => {
+                    stat.element.style.transform = 'scale(1.2)';
+                    stat.element.style.color = '#feca57';
+                    
+                    setTimeout(() => {
+                        stat.element.style.transform = 'scale(1)';
+                        stat.element.style.color = '#58a6ff';
+                    }, 300);
+                }, index * 200);
+            });
+        }
+        
+        // Auto-hide entering text after animation
+        setTimeout(() => {
+            const enteringText = document.getElementById('enteringText');
+            if (enteringText) {
+                enteringText.style.display = 'none';
+            }
+            
+            // Start stats animation after entering text disappears
+            setTimeout(() => {
+                animateStats();
+                setInterval(animateStats, 10000); // Repeat every 10 seconds
+            }, 1000);
+        }, 6000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9883599bf6217a04',t:'MTc1OTM5OTE5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
         showIframe();
     }
 

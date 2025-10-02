@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badshah Modz Bypass</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid rgba(48, 54, 61, 0.8);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: translateY(100px);
+            opacity: 0;
+            animation: slideInUp 1.5s ease-out forwards;
+            position: relative;
+        }
+
+        @keyframes slideInUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .entering-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 2s ease-in-out infinite, typeWriter 3s steps(20) forwards, fadeOut 1s ease-in-out 4s forwards;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #4ecdc4;
+            z-index: 1000;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes typeWriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .title {
+            background: linear-gradient(135deg, #58a6ff, #f78166, #79c0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #58a6ff, #f78166);
+            border-radius: 1px;
+        }
+
+        .subtitle {
+            color: #8b949e;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .image-container {
+            position: relative;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(22, 27, 34, 0.6);
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(48, 54, 61, 0.6);
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .main-image {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .bypass-button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .button-icon {
+            font-size: 18px;
+        }
+
+        .button-text {
+            font-weight: 700;
+        }
+
+        .load-button {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+
+        .bypass-button {
+            background: linear-gradient(135deg, #f78166 0%, #fd7e14 100%);
+            color: #ffffff;
+            box-shadow: 
+                0 4px 16px rgba(247, 129, 102, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(247, 129, 102, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bypass-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .bypass-button:hover::before {
+            left: 100%;
+        }
+
+        .load-button:hover, .bypass-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .load-button:active, .bypass-button:active {
+            transform: translateY(0);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: rgba(22, 27, 34, 0.4);
+            border: 1px solid rgba(48, 54, 61, 0.4);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(88, 166, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(88, 166, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #58a6ff;
+            margin-bottom: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 15px;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e3e3e3;
+            border-top: 4px solid #1e3c72;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #1e3c72;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .entering-text {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 20px 16px;
+                margin: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .title {
+                font-size: 20px;
+                letter-spacing: 1px;
+            }
+            
+            .bypass-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="entering-text" id="enteringText">
+        BADSHAH MODZ BYPASS HERE
+    </div>
+
+    <div class="container">
+        <h1 class="title">🔓 Badshah Modz</h1>
+        <p class="subtitle">Load image and bypass with custom URL</p>
+        
+        <div class="image-container">
+            <img class="main-image" src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop&crop=center" alt="Badshah Modz Bypass Tool" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJiZ0dyYWRpZW50IiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNThhNmZmO3N0b3Atb3BhY2l0eTowLjgiIC8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmNzgxNjY7c3RvcC1vcGFjaXR5OjAuNiIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3OWMwZmY7c3RvcC1vcGFjaXR5OjAuOCIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgcng9IjEyIiBmaWxsPSJ1cmwoI2JnR3JhZGllbnQpIiBvcGFjaXR5PSIwLjMiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIxMjAiIHI9IjQwIiBmaWxsPSIjNThhNmZmIiBvcGFjaXR5PSIwLjgiLz48cG9seWdvbiBwb2ludHM9IjEyMCwyMDAgMjAwLDE0MCAyODAsMjAwIDM2MCwxNDAgMzYwLDI2MCA0MCwyNjAiIGZpbGw9IiM3OWMwZmYiIG9wYWNpdHk9IjAuNiIvPjx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjYzlkMWQ5IiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iNjAwIiBmb250LWZhbWlseT0iSmV0QnJhaW5zIE1vbm8iPkJBRFNIQUggTU9EWjwvdGV4dD48dGV4dCB4PSIyMDAiIHk9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNThhNmZmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNTAwIiBvcGFjaXR5PSIwLjgiPlBST0ZFU1NJT05BTCBCWVBBU1MgVE9PTDwvdGV4dD48L3N2Zz4='; this.alt='Badshah Modz Professional Tool';">
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Available</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Unlimited</div>
+            </div>
+        </div>
+        
+        <button class="bypass-button" onclick="bypassUrl()">
+            <span class="button-icon">🚀</span>
+            <span class="button-text">INITIATE BYPASS</span>
+        </button>
+    </div>
+
+    <script>
+        function bypassUrl() {
+            // Professional bypass simulation
+            const button = document.querySelector('.bypass-button');
+            const originalText = button.innerHTML;
+            
+            // Show loading state
+            button.innerHTML = '<span class="button-icon">⚡</span><span class="button-text">BYPASSING...</span>';
+            button.disabled = true;
+            
+            // Simulate bypass process
+            setTimeout(() => {
+                button.innerHTML = '<span class="button-icon">✅</span><span class="button-text">BYPASS COMPLETE</span>';
+                
+                // Open bypass URL (example - replace with actual URL)
+                window.open('https://www.google.com', '_blank', 'noopener,noreferrer');
+                
+                // Reset button after delay
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }, 1500);
+        }
+        
+        // Auto-hide entering text after animation
+        setTimeout(() => {
+            const enteringText = document.getElementById('enteringText');
+            if (enteringText) {
+                enteringText.style.display = 'none';
+            }
+        }, 5000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98828c50243e7a04',t:'MTc1OTM5MDc4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

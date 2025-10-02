@@ -1,110 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Badshah Modz Bypass</title>
-    <style>
-        /* (your existing styles unchanged) */
-        /* ... copy the entire CSS from your original file here ... */
-        /* For brevity in this example I'll keep the same selectors as you provided. */
-        body {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-            background: #0d1117;
-            color: #c9d1d9;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-            position: relative;
-        }
-        /* (rest of your CSS) */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
-            z-index: -1;
-        }
-        .container {
-            background: rgba(13, 17, 23, 0.8);
-            border: 1px solid rgba(48, 54, 61, 0.8);
-            border-radius: 12px;
-            padding: 24px;
-            backdrop-filter: blur(20px);
-            box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            transform: translateY(100px);
-            opacity: 0;
-            animation: slideInUp 1.5s ease-out forwards;
-            position: relative;
-        }
-        /* keep rest of your CSS as-is... */
-        @keyframes slideInUp {
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        .entering-text {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 2s ease-in-out infinite, typeWriter 3s steps(20) forwards, fadeOut 1s ease-in-out 4s forwards;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 3px solid #4ecdc4;
-            z-index: 1000;
-        }
-        /* (skip other repeated CSS here - keep them from your original) */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Badshah Modz Bypass</title>
+<style>
+    body {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'JetBrains Mono', monospace;
+        background: #0d1117;
+        color: #c9d1d9;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-x: hidden;
+        position: relative;
+    }
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background:
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+        z-index: -1;
+    }
+    .container {
+        background: rgba(13,17,23,0.8);
+        border: 1px solid rgba(48,54,61,0.8);
+        border-radius: 12px;
+        padding: 24px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+    }
+    .entering-text { 
+        position: fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+        font-size: 2.5rem; font-weight:900;
+        background: linear-gradient(45deg,#ff6b6b,#4ecdc4,#45b7d1,#96ceb4);
+        background-size: 400% 400%;
+        -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        animation: fadeOut 1s ease-in-out 4s forwards;
+        white-space: nowrap; overflow:hidden; border-right:3px solid #4ecdc4;
+        z-index:1000;
+    }
+    @keyframes fadeOut { to { opacity:0; visibility:hidden; } }
+    .bypass-button { padding:12px 24px; border:none; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer; background:linear-gradient(135deg,#f78166 0%,#fd7e14 100%); color:#fff; }
+    #resultBox { margin-top:12px; padding:10px; background:rgba(255,255,255,0.03); border-radius:6px; font-size:13px; display:none; word-break:break-word; }
+    #iframeWrapper { margin-top:12px; width:100%; display:none; border-radius:8px; overflow:hidden; border:1px solid rgba(48,54,61,0.5); }
+    #verifyIframe { width:100%; height:480px; border:0; display:block; }
+</style>
+</head>
+<body>
+<div class="entering-text" id="enteringText">BADSHAH MODZ BYPASS HERE</div>
 
-        /* New UI helpers */
-        #resultBox {
-            margin-top: 16px;
-            padding: 10px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-            font-size: 13px;
-            color: #c9d1d9;
-            display: none;
-            word-break: break-word;
-            text-align: left;
+<div class="container">
+    <h1>🔓 Badshah Modz</h1>
+    <button id="bypassBtn" class="bypass-button" onclick="bypassUrl()">INITIATE BYPASS</button>
+    <div id="resultBox"></div>
+    <div id="iframeWrapper"><iframe id="verifyIframe" sandbox="allow-scripts allow-forms allow-popups"></iframe></div>
+</div>
+
+<script>
+const VERIFY_URL = 'https://getapks.pages.dev/verify-redirect';
+
+function showResult(msg, isError=false){
+    const rb = document.getElementById('resultBox');
+    rb.style.display='block';
+    rb.style.color=isError?'#ffb3b3':'#c9d1d9';
+    rb.textContent=msg;
+}
+function clearDisplays(){
+    document.getElementById('resultBox').style.display='none';
+    const wrapper=document.getElementById('iframeWrapper');
+    wrapper.style.display='none';
+    document.getElementById('verifyIframe').src='about:blank';
+}
+async function bypassUrl(){
+    const button=document.getElementById('bypassBtn');
+    const originalText=button.innerHTML;
+    clearDisplays();
+    button.innerHTML='BYPASSING...';
+    button.disabled=true;
+
+    try{
+        const res = await fetch(VERIFY_URL,{ method:'GET', mode:'cors', credentials:'include' });
+        const ct=res.headers.get('content-type')||'';
+        if(ct.includes('application/json')){
+            const data=await res.json();
+            if(data.status==='key already generated') showResult('Key already generated — daily limit reached.',false);
+            else if(data.status==='key generation not started yet') showResult('Key generation not started yet or referer invalid.',true);
+            else showResult(JSON.stringify(data),false);
+        }else{
+            showIframe();
         }
-        #iframeWrapper {
-            margin-top: 16px;
-            width: 100%;
-            display: none;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(48,54,61,0.5);
-        }
-        #verifyIframe {
-            width: 100%;
-            height: 480px;
-            border: 0;
-            display: block;
+    }catch(err){ 
+        console.warn('Fetch failed, fallback to iframe:',err);
+        showIframe();
+    }
+
+    setTimeout(()=>{button.innerHTML=originalText; button.disabled=false;},1500);
+}
+function showIframe(){
+    const wrapper=document.getElementById('iframeWrapper');
+    const iframe=document.getElementById('verifyIframe');
+    iframe.src=VERIFY_URL;
+    wrapper.style.display='block';
+    showResult('Loaded in iframe.',false);
+}
+setTimeout(()=>{document.getElementById('enteringText').style.display='none';},5000);
+</script>
+</body>
+</html>
         }
     </style>
 </head>

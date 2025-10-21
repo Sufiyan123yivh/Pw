@@ -4,13 +4,13 @@ import path from "path";
 
 // ⚙️ Configuration (edit these)
 const config = {
-  url: "http://tatatv.cc", // base URL (no trailing slash)
-  mac: "00:1A:79:00:13:DA",
-  sn: "8DC34D20E1021",
+  url: "http://tv.stream4k.cc", // base URL (no trailing slash)
+  mac: "00:1A:79:7F:0C:2C",
+  sn: "34B7721BF84DD",
   device_id_1:
-    "04AAC14D19D6184933091188770C419C0FB2D744BF402A8F56C6654A3A9CAA43",
+    "EB1729D3A7D23E502EEF473848A7DEC8B1C234DE5318093C6616A6464BCD6BA8",
   device_id_2:
-    "04AAC14D19D6184933091188770C419C0FB2D744BF402A8F56C6654A3A9CAA43",
+    "EB1729D3A7D23E502EEF473848A7DEC8B1C234DE5318093C6616A6464BCD6BA8",
   sig: "",
   api: "263",
 };

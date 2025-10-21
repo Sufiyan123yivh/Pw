@@ -145,7 +145,7 @@ async function getStreamUrl(token, id) {
 // Helper: image fallback
 function getLogo(logo) {
   if (!logo || !logo.endsWith(".png") && !logo.endsWith(".jpg")) {
-    return "https://i.ibb.co/DPd27cCK/photo-2024-12-29-23-10-30.jpg";
+    return "https://i.ibb.co/gLsp7Vrz/x.jpg";
   }
   return `http://${host}/stalker_portal/misc/logos/320/${logo}`;
 }

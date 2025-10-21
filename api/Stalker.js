@@ -154,7 +154,7 @@ function getLogo(logo) {
 export default async function handler(req, res) {
   try {
     const token = await getToken();
-    const baseUrl = `${req.headers["x-forwarded-proto"] || "https"}://${req.headers.host}/api/guu`;
+    const baseUrl = `${req.headers["x-forwarded-proto"] || "https"}://${req.headers.host}/api/Stalker`;
 
     // If ?id=channel_id → redirect to stream
     if (req.query.id) {

@@ -4,7 +4,7 @@ import path from "path";
 
 // ⚙️ Configuration (edit these)
 const config = {
-  url: "http://tv.stream4k.cc", // base URL (no trailing slash)
+  url: "http://tv.fusion4k.cc", // base URL (no trailing slash)
   mac: "00:1A:79:7F:0C:2C",
   sn: "34B7721BF84DD",
   device_id_1:

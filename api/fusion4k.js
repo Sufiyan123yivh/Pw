@@ -7,7 +7,7 @@ let cache = {
 };
 
 const config = {
-  url: "https://tv.fusion4k.cc", // HTTPS
+  url: "http://tv.fusion4k.cc", // HTTPS
   mac: "00:1A:79:7F:0C:2C",
   sn: "34B7721BF84DD",
   device_id_1:
@@ -93,12 +93,15 @@ async function getGenres(token) {
   return map;
 }
 
-// 🔹 Stream URL
+// 🔹 Stream URL with safe return
 async function getStreamUrl(token, id) {
   const url = `https://${host}/stalker_portal/server/load.php?type=itv&action=create_link&cmd=ffrt /ch/${id}&JsHttpRequest=1-xml`;
   const data = await safeFetchJson(url, buildHeaders(token));
-  if (!data?.js?.cmd) console.warn("create_link failed for id:", id, data);
-  return data?.js?.cmd || null;
+  if (!data?.js?.cmd) {
+    console.warn("create_link failed for channel id:", id, data);
+    return null;
+  }
+  return data.js.cmd;
 }
 
 // 🔹 Logo helper
@@ -138,7 +141,14 @@ export default async function handler(req, res) {
     for (const ch of channels) {
       const group = genres[ch.tv_genre_id] || "Others";
       const logo = getLogo(ch.logo);
-      const id = ch.id; // use channel ID instead of parsing cmd
+      const id = ch.id;
+
+      const streamUrl = await getStreamUrl(token, id);
+      if (!streamUrl) {
+        console.log(`Skipping channel ${ch.name} (id: ${id}) due to failed link`);
+        continue; // skip this channel
+      }
+
       const playUrl = `${baseUrl}?id=${encodeURIComponent(id)}`;
       playlist += `#EXTINF:-1 tvg-id="${id}" tvg-logo="${logo}" group-title="${group}",${ch.name}\n${playUrl}\n\n`;
     }

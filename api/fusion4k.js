@@ -1,4 +1,4 @@
-// /api/guu.js
+// /ai/guu.js
 import fs from "fs";
 import path from "path";
 

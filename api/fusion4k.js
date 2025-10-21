@@ -1,10 +1,10 @@
-// /api/guu.js
+// /api/fusion4k.js
 import fs from "fs";
 import path from "path";
 
 // ⚙️ Configuration
 const config = {
-  url: "http://tv.stream4k.cc", // base URL (no trailing slash)
+  url: "http://tv.stream4k.cc",
   mac: "00:1A:79:7F:0C:2C",
   sn: "34B7721BF84DD",
   device_id_1:
@@ -66,7 +66,7 @@ async function reGenerateToken(token) {
   return res.data?.js?.token || token;
 }
 
-// Get profile (needed for registration)
+// Get profile
 async function getProfile(token) {
   const timestamp = Math.floor(Date.now() / 1000);
   const url = `http://${host}/stalker_portal/server/load.php?type=stb&action=get_profile&sn=${config.sn}&device_id=${config.device_id_1}&device_id2=${config.device_id_2}&signature=${config.sig}&timestamp=${timestamp}&api_signature=${config.api}&JsHttpRequest=1-xml`;
@@ -90,7 +90,7 @@ async function generateToken() {
   return validToken;
 }
 
-// Get token with auto-refresh
+// Get token (auto-refresh)
 async function getToken(forceRefresh = false) {
   if (!forceRefresh && fs.existsSync(tokenFile)) {
     const saved = fs.readFileSync(tokenFile, "utf8").trim();
@@ -99,7 +99,7 @@ async function getToken(forceRefresh = false) {
   return generateToken();
 }
 
-// Build headers
+// Headers
 function buildHeaders(token) {
   return {
     "User-Agent":
@@ -111,14 +111,14 @@ function buildHeaders(token) {
   };
 }
 
-// Fetch with auto token refresh
+// Safe fetch wrapper
 async function safeFetch(fetchFn) {
   try {
     const token = await getToken();
     return await fetchFn(token);
   } catch (err) {
     console.log("Token expired or failed, regenerating...");
-    const token = await getToken(true); // force refresh
+    const token = await getToken(true);
     return await fetchFn(token);
   }
 }
@@ -143,14 +143,16 @@ async function getGenres(token) {
   return map;
 }
 
-// Generate stream URL
-async function getStreamUrl(token, id) {
-  const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=create_link&cmd=ffrt%20http://localhost/ch/${id}&JsHttpRequest=1-xml`;
+// Get stream URL (use original cmd!)
+async function getStreamUrl(token, cmd) {
+  if (!cmd) return null;
+  const encodedCmd = encodeURIComponent(cmd);
+  const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=create_link&cmd=${encodedCmd}&JsHttpRequest=1-xml`;
   const res = await fetchInfo(url, buildHeaders(token));
   return res.data?.js?.cmd || null;
 }
 
-// Helper: image fallback
+// Image fallback
 function getLogo(logo) {
   if (!logo || (!logo.endsWith(".png") && !logo.endsWith(".jpg"))) {
     return "https://i.ibb.co/gLsp7Vrz/x.jpg";
@@ -163,10 +165,17 @@ export default async function handler(req, res) {
   try {
     const baseUrl = `${req.headers["x-forwarded-proto"] || "https"}://${req.headers.host}/api/fusion4k`;
 
-    // ?id=channel_id → redirect to stream
+    // Direct stream link
     if (req.query.id) {
-      const id = req.query.id;
-      const streamUrl = await safeFetch((token) => getStreamUrl(token, id));
+      const channelId = req.query.id;
+      const streamUrl = await safeFetch(async (token) => {
+        const channels = await getAllChannels(token);
+        const ch = channels.find((c) => {
+          return c.cmd && c.cmd.includes(`/ch/${channelId}`);
+        });
+        if (!ch) return null;
+        return await getStreamUrl(token, ch.cmd);
+      });
       if (!streamUrl) return res.status(500).send("Failed to fetch stream link");
       res.writeHead(302, { Location: streamUrl });
       res.end();

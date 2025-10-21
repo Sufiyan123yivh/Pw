@@ -4,7 +4,7 @@ import path from "path";
 
 // ⚙️ Configuration
 const config = {
-  url: "http://tv.stream4k.cc",
+  url: "http://tv.tvzon.tv",
   mac: "00:1A:79:81:D5:AF",
   sn: "97805313CDA06",
   device_id_1:

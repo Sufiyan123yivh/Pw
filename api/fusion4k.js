@@ -1,109 +1,198 @@
-import fetch from 'node-fetch';
+// /api/guu.js
+import fs from "fs";
+import path from "path";
 
-const URL = "http://tv.fusion4k.cc";
-const MAC = "00:1A:79:00:01:07";
-const SN = "ED59AF31FDD11";
+// ⚙️ Configuration (edit these)
+const config = {
+  url: "http://tv.stream4k.cc", // base URL (no trailing slash)
+  mac: "00:1A:79:7F:0C:2C",
+  sn: "34B7721BF84DD",
+  device_id_1:
+    "EB1729D3A7D23E502EEF473848A7DEC8B1C234DE5318093C6616A6464BCD6BA8",
+  device_id_2:
+    "EB1729D3A7D23E502EEF473848A7DEC8B1C234DE5318093C6616A6464BCD6BA8",
+  sig: "",
+  api: "263",
+};
 
-const host = new URL(URL).host;
-const USER_AGENT = 'Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3';
+// 🧩 Utility: resolve host
+const host = new URL(config.url).host;
 
-// In-memory cache
-let tokenCache = null;
-let tokenTime = 0; // timestamp when token was obtained
-let playlistCache = null;
-let groupsCache = null;
+// 🧩 Utility: local "token" cache (Vercel tmp dir)
+const tokenFile = path.join("/tmp", `${host}_token.txt`);
 
-// Helper: fetch JSON with retries
-async function fetchJSON(url, headers = {}) {
+// Helper for fetch requests with headers
+async function fetchInfo(url, headers) {
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      ...headers,
+      Cookie: `mac=${config.mac}; stb_lang=en; timezone=GMT`,
+    },
+  });
+  const text = await res.text();
+  let json;
   try {
-    const res = await fetch(url, { headers });
-    return await res.json();
-  } catch (e) {
-    console.error("Fetch Error:", e.message);
-    return null;
+    json = JSON.parse(text);
+  } catch {
+    json = { js: {} };
   }
+  return { data: json, raw: text };
 }
 
-// Generate or refresh token
-async function getToken(forceRefresh = false) {
-  const now = Date.now();
-  if (!forceRefresh && tokenCache && now - tokenTime < 5 * 60 * 1000) { // 5 min cache
-    return tokenCache;
-  }
-  const handshakeUrl = `http://${host}/stalker_portal/server/load.php?type=stb&action=handshake&token=&JsHttpRequest=1-xml`;
-  const data = await fetchJSON(handshakeUrl, { 'User-Agent': USER_AGENT });
-  if (!data?.js?.token) throw new Error("Failed to get token");
-  tokenCache = data.js.token;
-  tokenTime = now;
-  return tokenCache;
+// Handshake
+async function handshake() {
+  const Xurl = `http://${host}/stalker_portal/server/load.php?type=stb&action=handshake&token=&JsHttpRequest=1-xml`;
+  const headers = {
+    "User-Agent":
+      "Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3",
+    "X-User-Agent": "Model: MAG250; Link: WiFi",
+    Referer: `http://${host}/stalker_portal/c/`,
+    Host: host,
+  };
+  const res = await fetchInfo(Xurl, headers);
+  const token = res.data?.js?.token || "";
+  const random = res.data?.js?.random || "";
+  return { token, random };
 }
 
-// Fetch categories
-async function getGroups() {
-  if (groupsCache) return groupsCache;
-  const token = await getToken();
+// Re-handshake with token
+async function reGenerateToken(token) {
+  const Xurl = `http://${host}/stalker_portal/server/load.php?type=stb&action=handshake&token=${token}&JsHttpRequest=1-xml`;
+  const headers = {
+    "User-Agent":
+      "Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3",
+    "X-User-Agent": "Model: MAG250; Link: WiFi",
+    Referer: `http://${host}/stalker_portal/c/`,
+    Host: host,
+  };
+  const res = await fetchInfo(Xurl, headers);
+  return res.data?.js?.token || token;
+}
+
+// Get profile (for registration)
+async function getProfile(token) {
+  const { random } = await handshake();
+  const timestamp = Math.floor(Date.now() / 1000);
+  const url = `http://${host}/stalker_portal/server/load.php?type=stb&action=get_profile&sn=${config.sn}&device_id=${config.device_id_1}&device_id2=${config.device_id_2}&signature=${config.sig}&timestamp=${timestamp}&api_signature=${config.api}&JsHttpRequest=1-xml`;
+  const headers = {
+    "User-Agent":
+      "Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3",
+    "X-User-Agent": "Model: MAG250; Link: WiFi",
+    Referer: `http://${host}/stalker_portal/c/`,
+    Authorization: `Bearer ${token}`,
+    Host: host,
+  };
+  await fetchInfo(url, headers);
+}
+
+// Generate a fresh token
+async function generateToken() {
+  const { token } = await handshake();
+  const validToken = await reGenerateToken(token);
+  await getProfile(validToken);
+  fs.writeFileSync(tokenFile, validToken);
+  return validToken;
+}
+
+// Get Bearer token (cached)
+async function getToken() {
+  if (fs.existsSync(tokenFile)) {
+    const saved = fs.readFileSync(tokenFile, "utf8").trim();
+    if (saved) return saved;
+  }
+  return generateToken();
+}
+
+// Get headers for IPTV requests
+function buildHeaders(token) {
+  return {
+    "User-Agent":
+      "Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3",
+    "X-User-Agent": "Model: MAG250; Link: WiFi",
+    Referer: `http://${host}/stalker_portal/c/`,
+    Authorization: `Bearer ${token}`,
+    Host: host,
+  };
+}
+
+// Get all channels
+async function getAllChannels(token) {
+  const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=get_all_channels&JsHttpRequest=1-xml`;
+  const res = await fetchInfo(url, buildHeaders(token));
+  return res.data?.js?.data || [];
+}
+
+// Get all groups
+async function getGenres(token) {
   const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=get_genres&JsHttpRequest=1-xml`;
-  const data = await fetchJSON(url, { "User-Agent": USER_AGENT, "Authorization": `Bearer ${token}` });
-  if (!data?.js) return {};
-  const result = {};
-  for (const g of data.js) if (g.id !== "*") result[g.id] = g.title;
-  groupsCache = result;
-  return result;
-}
-
-// Generate channel ID
-function generateId(cmd) {
-  if (!cmd) return "";
-  return cmd.replace('ffrt http://localhost/ch/', '').replace('ffrt http:///ch/', '');
-}
-
-// Get image URL
-function getImageUrl(channel) {
-  const logo = channel.logo?.replace(/\.png|\.jpg/gi, '');
-  if (!isNaN(logo)) return `http://${host}/stalker_portal/misc/logos/320/${channel.logo}`;
-  return "https://i.ibb.co/DPd27cCK/photo-2024-12-29-23-10-30.jpg";
-}
-
-// Fetch stream URL
-async function fetchStreamUrl(id) {
-  const token = await getToken();
-  const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=create_link&cmd=ffrt http://localhost/ch/${id}&JsHttpRequest=1-xml`;
-  const data = await fetchJSON(url, { "User-Agent": USER_AGENT, "Authorization": `Bearer ${token}` });
-  if (!data?.js?.cmd) {
-    // Try refreshing token once
-    const newToken = await getToken(true);
-    const retry = await fetchJSON(url, { "User-Agent": USER_AGENT, "Authorization": `Bearer ${newToken}` });
-    return retry?.js?.cmd || null;
+  const res = await fetchInfo(url, buildHeaders(token));
+  const arr = res.data?.js || [];
+  const map = {};
+  for (const g of arr) {
+    if (g.id !== "*") map[g.id] = g.title;
   }
-  return data.js.cmd;
+  return map;
 }
 
-// Serverless API
+// Generate stream URL
+async function getStreamUrl(token, id) {
+  const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=create_link&cmd=ffrt%20http://localhost/ch/${id}&JsHttpRequest=1-xml`;
+  const res = await fetchInfo(url, buildHeaders(token));
+  return res.data?.js?.cmd || null;
+}
+
+// Helper: image fallback
+function getLogo(logo) {
+  if (!logo || !logo.endsWith(".png") && !logo.endsWith(".jpg")) {
+    return "https://i.ibb.co/gLsp7Vrz/x.jpg";
+  }
+  return `http://${host}/stalker_portal/misc/logos/320/${logo}`;
+}
+
+// 🔹 Vercel API route handler
 export default async function handler(req, res) {
   try {
-    const { id } = req.query;
-    if (id) {
-      const streamUrl = await fetchStreamUrl(id);
-      if (!streamUrl) return res.status(500).send("Failed to get stream URL");
-      return res.redirect(streamUrl);
-    }
-
-    // M3U playlist
-    if (playlistCache) {
-      res.setHeader('Content-Type', 'audio/x-mpegurl');
-      return res.send(playlistCache);
-    }
-
     const token = await getToken();
-    const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=get_all_channels&JsHttpRequest=1-xml`;
-    const playlistData = await fetchJSON(url, { "User-Agent": USER_AGENT, "Authorization": `Bearer ${token}` });
-    if (!playlistData?.js?.data) return res.status(500).send("Failed to fetch playlist");
+    const baseUrl = `${req.headers["x-forwarded-proto"] || "https"}://${req.headers.host}/api/fusion4k`;
 
-    const tvCategories = await getGroups();
-    let playlistContent = `#EXTM3U\n#DATE:- ${new Date().toString()}\n\n`;
+    // If ?id=channel_id → redirect to stream
+    if (req.query.id) {
+      const id = req.query.id;
+      const streamUrl = await getStreamUrl(token, id);
+      if (!streamUrl) {
+        res.status(500).send("Failed to fetch stream link");
+      } else {
+        res.writeHead(302, { Location: streamUrl });
+        res.end();
+      }
+      return;
+    }
 
-    for (const ch of playlistData.js.data) {
-      const categoryName = tvCategories[ch.tv_genre_id] || "Unknown";
+    // Otherwise → generate playlist
+    const [channels, genres] = await Promise.all([
+      getAllChannels(token),
+      getGenres(token),
+    ]);
+
+    let playlist = `#EXTM3U\n#DATE:- ${new Date().toLocaleString("en-IN")}\n\n`;
+
+    for (const ch of channels) {
+      const group = genres[ch.tv_genre_id] || "Others";
+      const logo = getLogo(ch.logo);
+      const id = ch.cmd.replace("ffrt http://localhost/ch/", "");
+      const playUrl = `${baseUrl}?id=${encodeURIComponent(id)}`;
+      playlist += `#EXTINF:-1 tvg-id="${id}" tvg-logo="${logo}" group-title="${group}",${ch.name}\n${playUrl}\n\n`;
+    }
+
+    res.setHeader("Content-Type", "audio/x-mpegurl");
+    res.setHeader("Content-Disposition", 'inline; filename="playlist.m3u"');
+    res.send(playlist);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+}      const categoryName = tvCategories[ch.tv_genre_id] || "Unknown";
       const channelId = generateId(ch.cmd);
       const streamLink = `${req.headers['x-forwarded-proto'] || 'https'}://${req.headers.host}${req.url}?id=${channelId}`;
       playlistContent += `#EXTINF:-1 tvg-id="${channelId}" tvg-logo="${getImageUrl(ch)}" group-title="${categoryName}",${ch.name}\n${streamLink}\n\n`;

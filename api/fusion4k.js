@@ -1,6 +1,4 @@
 // /api/guu.js
-// Vercel-friendly, safe, serverless version
-
 let cache = {
   token: null,
   playlist: null,
@@ -9,7 +7,7 @@ let cache = {
 };
 
 const config = {
-  url: "https://tv.fusion4k.cc", // use HTTPS if possible
+  url: "https://tv.fusion4k.cc", // HTTPS
   mac: "00:1A:79:7F:0C:2C",
   sn: "34B7721BF84DD",
   device_id_1:
@@ -23,7 +21,7 @@ const config = {
 
 const host = new URL(config.url).host;
 
-// 🔹 Safe fetch utility
+// 🔹 Safe fetch
 async function safeFetchJson(url, headers) {
   try {
     const res = await fetch(url, { headers });
@@ -51,15 +49,23 @@ function buildHeaders(token) {
   };
 }
 
-// 🔹 Token handling
+// 🔹 Token + profile
 async function handshake() {
   const url = `https://${host}/stalker_portal/server/load.php?type=stb&action=handshake&JsHttpRequest=1-xml`;
   const data = await safeFetchJson(url, buildHeaders());
   return data?.js?.token || "";
 }
 
+async function getProfile(token) {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const url = `https://${host}/stalker_portal/server/load.php?type=stb&action=get_profile&sn=${config.sn}&device_id=${config.device_id_1}&device_id2=${config.device_id_2}&signature=${config.sig}&timestamp=${timestamp}&api_signature=${config.api}&JsHttpRequest=1-xml`;
+  await safeFetchJson(url, buildHeaders(token));
+}
+
 async function generateToken() {
   const token = await handshake();
+  console.log("Generated token:", token);
+  await getProfile(token);
   cache.token = token;
   cache.tokenTime = Date.now();
   return token;
@@ -89,8 +95,9 @@ async function getGenres(token) {
 
 // 🔹 Stream URL
 async function getStreamUrl(token, id) {
-  const url = `https://${host}/stalker_portal/server/load.php?type=itv&action=create_link&cmd=ffrt%20http://localhost/ch/${id}&JsHttpRequest=1-xml`;
+  const url = `https://${host}/stalker_portal/server/load.php?type=itv&action=create_link&cmd=ffrt /ch/${id}&JsHttpRequest=1-xml`;
   const data = await safeFetchJson(url, buildHeaders(token));
+  if (!data?.js?.cmd) console.warn("create_link failed for id:", id, data);
   return data?.js?.cmd || null;
 }
 
@@ -112,10 +119,7 @@ export default async function handler(req, res) {
     // ▶️ Redirect to live stream if ?id
     if (req.query.id) {
       const link = await getStreamUrl(token, req.query.id);
-      if (!link) {
-        console.error("Failed to fetch stream link for id:", req.query.id);
-        return res.status(500).send("Failed to create stream link");
-      }
+      if (!link) return res.status(500).send("Failed to create stream link");
       res.writeHead(302, { Location: link });
       return res.end();
     }
@@ -134,7 +138,7 @@ export default async function handler(req, res) {
     for (const ch of channels) {
       const group = genres[ch.tv_genre_id] || "Others";
       const logo = getLogo(ch.logo);
-      const id = ch.cmd.replace("ffrt http://localhost/ch/", "");
+      const id = ch.id; // use channel ID instead of parsing cmd
       const playUrl = `${baseUrl}?id=${encodeURIComponent(id)}`;
       playlist += `#EXTINF:-1 tvg-id="${id}" tvg-logo="${logo}" group-title="${group}",${ch.name}\n${playUrl}\n\n`;
     }

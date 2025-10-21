@@ -4,13 +4,13 @@ import path from "path";
 
 // ⚙️ Configuration (edit these)
 const config = {
-  url: "http://tv.fusion4k.cc", // base URL (no trailing slash)
-  mac: "00:1A:79:00:01:07",
-  sn: "ED59AF31FDD11",
+  url: "http://tatatv.cc/stalker_portal/c/", // base URL (no trailing slash)
+  mac: "00:1A:79:00:13:DA",
+  sn: "8DC34D20E1021",
   device_id_1:
-    "63B89283DA4D02C113BE0E0F9B9AB7B2210D62ABA3611B1CAE19580D6608A025",
+    "04AAC14D19D6184933091188770C419C0FB2D744BF402A8F56C6654A3A9CAA43",
   device_id_2:
-    "63B89283DA4D02C113BE0E0F9B9AB7B2210D62ABA3611B1CAE19580D6608A025",
+    "04AAC14D19D6184933091188770C419C0FB2D744BF402A8F56C6654A3A9CAA43",
   sig: "",
   api: "263",
 };

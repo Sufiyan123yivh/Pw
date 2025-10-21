@@ -2,7 +2,7 @@
 import fs from "fs";
 import path from "path";
 
-// ⚙️ Configuration (edit these)
+// ⚙️ Configuration
 const config = {
   url: "http://tv.stream4k.cc", // base URL (no trailing slash)
   mac: "00:1A:79:7F:0C:2C",
@@ -15,13 +15,10 @@ const config = {
   api: "263",
 };
 
-// 🧩 Utility: resolve host
 const host = new URL(config.url).host;
-
-// 🧩 Utility: local "token" cache (Vercel tmp dir)
 const tokenFile = path.join("/tmp", `${host}_token.txt`);
 
-// Helper for fetch requests with headers
+// Helper to fetch JSON
 async function fetchInfo(url, headers) {
   const res = await fetch(url, {
     method: "GET",
@@ -31,18 +28,16 @@ async function fetchInfo(url, headers) {
     },
   });
   const text = await res.text();
-  let json;
   try {
-    json = JSON.parse(text);
+    return { data: JSON.parse(text), raw: text };
   } catch {
-    json = { js: {} };
+    return { data: {}, raw: text };
   }
-  return { data: json, raw: text };
 }
 
 // Handshake
 async function handshake() {
-  const Xurl = `http://${host}/stalker_portal/server/load.php?type=stb&action=handshake&token=&JsHttpRequest=1-xml`;
+  const url = `http://${host}/stalker_portal/server/load.php?type=stb&action=handshake&token=&JsHttpRequest=1-xml`;
   const headers = {
     "User-Agent":
       "Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3",
@@ -50,15 +45,16 @@ async function handshake() {
     Referer: `http://${host}/stalker_portal/c/`,
     Host: host,
   };
-  const res = await fetchInfo(Xurl, headers);
-  const token = res.data?.js?.token || "";
-  const random = res.data?.js?.random || "";
-  return { token, random };
+  const res = await fetchInfo(url, headers);
+  return {
+    token: res.data?.js?.token || "",
+    random: res.data?.js?.random || "",
+  };
 }
 
-// Re-handshake with token
+// Re-handshake
 async function reGenerateToken(token) {
-  const Xurl = `http://${host}/stalker_portal/server/load.php?type=stb&action=handshake&token=${token}&JsHttpRequest=1-xml`;
+  const url = `http://${host}/stalker_portal/server/load.php?type=stb&action=handshake&token=${token}&JsHttpRequest=1-xml`;
   const headers = {
     "User-Agent":
       "Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3",
@@ -66,13 +62,12 @@ async function reGenerateToken(token) {
     Referer: `http://${host}/stalker_portal/c/`,
     Host: host,
   };
-  const res = await fetchInfo(Xurl, headers);
+  const res = await fetchInfo(url, headers);
   return res.data?.js?.token || token;
 }
 
-// Get profile (for registration)
+// Get profile (needed for registration)
 async function getProfile(token) {
-  const { random } = await handshake();
   const timestamp = Math.floor(Date.now() / 1000);
   const url = `http://${host}/stalker_portal/server/load.php?type=stb&action=get_profile&sn=${config.sn}&device_id=${config.device_id_1}&device_id2=${config.device_id_2}&signature=${config.sig}&timestamp=${timestamp}&api_signature=${config.api}&JsHttpRequest=1-xml`;
   const headers = {
@@ -86,7 +81,7 @@ async function getProfile(token) {
   await fetchInfo(url, headers);
 }
 
-// Generate a fresh token
+// Generate new token
 async function generateToken() {
   const { token } = await handshake();
   const validToken = await reGenerateToken(token);
@@ -95,16 +90,16 @@ async function generateToken() {
   return validToken;
 }
 
-// Get Bearer token (cached)
-async function getToken() {
-  if (fs.existsSync(tokenFile)) {
+// Get token with auto-refresh
+async function getToken(forceRefresh = false) {
+  if (!forceRefresh && fs.existsSync(tokenFile)) {
     const saved = fs.readFileSync(tokenFile, "utf8").trim();
     if (saved) return saved;
   }
   return generateToken();
 }
 
-// Get headers for IPTV requests
+// Build headers
 function buildHeaders(token) {
   return {
     "User-Agent":
@@ -116,14 +111,27 @@ function buildHeaders(token) {
   };
 }
 
+// Fetch with auto token refresh
+async function safeFetch(fetchFn) {
+  try {
+    const token = await getToken();
+    return await fetchFn(token);
+  } catch (err) {
+    console.log("Token expired or failed, regenerating...");
+    const token = await getToken(true); // force refresh
+    return await fetchFn(token);
+  }
+}
+
 // Get all channels
 async function getAllChannels(token) {
   const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=get_all_channels&JsHttpRequest=1-xml`;
   const res = await fetchInfo(url, buildHeaders(token));
-  return res.data?.js?.data || [];
+  if (!res.data?.js?.data) throw new Error("Invalid channel data");
+  return res.data.js.data;
 }
 
-// Get all groups
+// Get genres
 async function getGenres(token) {
   const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=get_genres&JsHttpRequest=1-xml`;
   const res = await fetchInfo(url, buildHeaders(token));
@@ -144,39 +152,35 @@ async function getStreamUrl(token, id) {
 
 // Helper: image fallback
 function getLogo(logo) {
-  if (!logo || !logo.endsWith(".png") && !logo.endsWith(".jpg")) {
+  if (!logo || (!logo.endsWith(".png") && !logo.endsWith(".jpg"))) {
     return "https://i.ibb.co/gLsp7Vrz/x.jpg";
   }
   return `http://${host}/stalker_portal/misc/logos/320/${logo}`;
 }
 
-// 🔹 Vercel API route handler
+// API handler
 export default async function handler(req, res) {
   try {
-    const token = await getToken();
     const baseUrl = `${req.headers["x-forwarded-proto"] || "https"}://${req.headers.host}/api/fusion4k`;
 
-    // If ?id=channel_id → redirect to stream
+    // ?id=channel_id → redirect to stream
     if (req.query.id) {
       const id = req.query.id;
-      const streamUrl = await getStreamUrl(token, id);
-      if (!streamUrl) {
-        res.status(500).send("Failed to fetch stream link");
-      } else {
-        res.writeHead(302, { Location: streamUrl });
-        res.end();
-      }
+      const streamUrl = await safeFetch((token) => getStreamUrl(token, id));
+      if (!streamUrl) return res.status(500).send("Failed to fetch stream link");
+      res.writeHead(302, { Location: streamUrl });
+      res.end();
       return;
     }
 
-    // Otherwise → generate playlist
-    const [channels, genres] = await Promise.all([
-      getAllChannels(token),
-      getGenres(token),
-    ]);
+    // Generate playlist
+    const [channels, genres] = await safeFetch(async (token) => {
+      const ch = await getAllChannels(token);
+      const gr = await getGenres(token);
+      return [ch, gr];
+    });
 
     let playlist = `#EXTM3U\n#DATE:- ${new Date().toLocaleString("en-IN")}\n\n`;
-
     for (const ch of channels) {
       const group = genres[ch.tv_genre_id] || "Others";
       const logo = getLogo(ch.logo);

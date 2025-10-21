@@ -1,4 +1,4 @@
-// /ai/guu.js
+// /api/guu.js
 import fs from "fs";
 import path from "path";
 
@@ -13,15 +13,17 @@ const config = {
     "EB1729D3A7D23E502EEF473848A7DEC8B1C234DE5318093C6616A6464BCD6BA8",
   sig: "",
   api: "263",
+  cacheTTL: 300, // optional: 5-minute playlist cache
 };
 
 // 🧩 Utility: resolve host
 const host = new URL(config.url).host;
 
-// 🧩 Utility: local "token" cache (Vercel tmp dir)
+// 🧩 Token + cache paths
 const tokenFile = path.join("/tmp", `${host}_token.txt`);
+const playlistFile = path.join("/tmp", `${host}_playlist.m3u`);
 
-// Helper for fetch requests with headers
+// 🧩 Helper for fetch requests
 async function fetchInfo(url, headers) {
   const res = await fetch(url, {
     method: "GET",
@@ -31,16 +33,14 @@ async function fetchInfo(url, headers) {
     },
   });
   const text = await res.text();
-  let json;
   try {
-    json = JSON.parse(text);
+    return { data: JSON.parse(text), raw: text };
   } catch {
-    json = { js: {} };
+    return { data: { js: {} }, raw: text };
   }
-  return { data: json, raw: text };
 }
 
-// Handshake
+// 🔹 Handshake
 async function handshake() {
   const Xurl = `http://${host}/stalker_portal/server/load.php?type=stb&action=handshake&token=&JsHttpRequest=1-xml`;
   const headers = {
@@ -56,7 +56,7 @@ async function handshake() {
   return { token, random };
 }
 
-// Re-handshake with token
+// 🔹 Re-handshake with token
 async function reGenerateToken(token) {
   const Xurl = `http://${host}/stalker_portal/server/load.php?type=stb&action=handshake&token=${token}&JsHttpRequest=1-xml`;
   const headers = {
@@ -70,7 +70,7 @@ async function reGenerateToken(token) {
   return res.data?.js?.token || token;
 }
 
-// Get profile (for registration)
+// 🔹 Get profile (register device)
 async function getProfile(token) {
   const { random } = await handshake();
   const timestamp = Math.floor(Date.now() / 1000);
@@ -86,7 +86,7 @@ async function getProfile(token) {
   await fetchInfo(url, headers);
 }
 
-// Generate a fresh token
+// 🔹 Token generation + caching
 async function generateToken() {
   const { token } = await handshake();
   const validToken = await reGenerateToken(token);
@@ -95,7 +95,7 @@ async function generateToken() {
   return validToken;
 }
 
-// Get Bearer token (cached)
+// 🔹 Get token (reuse if cached)
 async function getToken() {
   if (fs.existsSync(tokenFile)) {
     const saved = fs.readFileSync(tokenFile, "utf8").trim();
@@ -104,7 +104,7 @@ async function getToken() {
   return generateToken();
 }
 
-// Get headers for IPTV requests
+// 🔹 Request headers builder
 function buildHeaders(token) {
   return {
     "User-Agent":
@@ -116,21 +116,106 @@ function buildHeaders(token) {
   };
 }
 
-// Get all channels
+// 🔹 Get all channels
 async function getAllChannels(token) {
   const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=get_all_channels&JsHttpRequest=1-xml`;
   const res = await fetchInfo(url, buildHeaders(token));
   return res.data?.js?.data || [];
 }
 
-// Get all groups
+// 🔹 Get all genres
 async function getGenres(token) {
   const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=get_genres&JsHttpRequest=1-xml`;
   const res = await fetchInfo(url, buildHeaders(token));
   const arr = res.data?.js || [];
   const map = {};
-  for (const g of arr) {
-    if (g.id !== "*") map[g.id] = g.title;
+  for (const g of arr) if (g.id !== "*") map[g.id] = g.title;
+  return map;
+}
+
+// 🔹 Create stream URL (with retry)
+async function getStreamUrl(token, id) {
+  const url = `http://${host}/stalker_portal/server/load.php?type=itv&action=create_link&cmd=ffrt%20http://localhost/ch/${id}&JsHttpRequest=1-xml`;
+  const res = await fetchInfo(url, buildHeaders(token));
+  let link = res.data?.js?.cmd || null;
+
+  if (!link) {
+    // Retry if token expired
+    const newToken = await generateToken();
+    const retry = await fetchInfo(url, buildHeaders(newToken));
+    link = retry.data?.js?.cmd || null;
+  }
+
+  return link;
+}
+
+// 🔹 Logo helper
+function getLogo(logo) {
+  if (!logo || (!logo.endsWith(".png") && !logo.endsWith(".jpg"))) {
+    return "https://i.ibb.co/gLsp7Vrz/x.jpg";
+  }
+  return `http://${host}/stalker_portal/misc/logos/320/${logo}`;
+}
+
+// 🔹 Cache check helper
+function isCacheValid(file, ttlSec) {
+  if (!fs.existsSync(file)) return false;
+  const age = (Date.now() - fs.statSync(file).mtimeMs) / 1000;
+  return age < ttlSec;
+}
+
+// 🧩 Vercel API handler
+export default async function handler(req, res) {
+  try {
+    const token = await getToken();
+    const baseUrl = `${req.headers["x-forwarded-proto"] || "https"}://${req.headers.host}/api/guu`;
+
+    // ▶️ If id provided → redirect to stream
+    if (req.query.id) {
+      const id = req.query.id;
+      const streamUrl = await getStreamUrl(token, id);
+      if (!streamUrl) {
+        res.status(500).send("Failed to fetch stream link");
+        return;
+      }
+      res.writeHead(302, { Location: streamUrl });
+      res.end();
+      return;
+    }
+
+    // 📁 Serve cached playlist if valid
+    if (isCacheValid(playlistFile, config.cacheTTL)) {
+      const cached = fs.readFileSync(playlistFile, "utf8");
+      res.setHeader("Content-Type", "audio/x-mpegurl");
+      res.send(cached);
+      return;
+    }
+
+    // 🎶 Build new playlist
+    const [channels, genres] = await Promise.all([
+      getAllChannels(token),
+      getGenres(token),
+    ]);
+
+    let playlist = `#EXTM3U\n#DATE:- ${new Date().toLocaleString("en-IN")}\n\n`;
+
+    for (const ch of channels) {
+      const group = genres[ch.tv_genre_id] || "Others";
+      const logo = getLogo(ch.logo);
+      const id = ch.cmd.replace("ffrt http://localhost/ch/", "");
+      const playUrl = `${baseUrl}?id=${encodeURIComponent(id)}`;
+      playlist += `#EXTINF:-1 tvg-id="${id}" tvg-logo="${logo}" group-title="${group}",${ch.name}\n${playUrl}\n\n`;
+    }
+
+    fs.writeFileSync(playlistFile, playlist);
+    res.setHeader("Content-Type", "audio/x-mpegurl");
+    res.setHeader("Content-Disposition", 'inline; filename="playlist.m3u"');
+    res.send(playlist);
+  } catch (err) {
+    console.error("❌ Server Error:", err);
+    res.status(500).send("Server error: " + err.message);
+  }
+}    if (g.id !== "*") map[g.id] = g.title;
   }
   return map;
 }

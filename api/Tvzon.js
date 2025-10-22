@@ -12,7 +12,7 @@ const config = {
   device_id_2:
     "04AAC14D19D6184933091188770C419C0FB2D744BF402A8F56C6654A3A9CAA43",
   sig: "",
-  api: "265",
+  api: "264",
 };
 
 const host = new URL(config.url).host;

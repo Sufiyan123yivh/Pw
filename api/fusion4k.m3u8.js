@@ -163,7 +163,7 @@ function getLogo(logo) {
 // API handler
 export default async function handler(req, res) {
   try {
-    const baseUrl = `${req.headers["x-forwarded-proto"] || "https"}://${req.headers.host}/api/fusion4k`;
+    const baseUrl = `${req.headers["x-forwarded-proto"] || "https"}://${req.headers.host}/api/fusion4k.m3u8`;
 
     // Direct stream link
     if (req.query.id) {

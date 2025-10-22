@@ -4,7 +4,7 @@ import path from "path";
 
 // ⚙️ Configuration
 const config = {
-  url: "https://tatatv.cc/",
+  url: "https://tatatv.cc/stalker_portal/c/",
   mac: " 00:1A:79:00:13:DA",
   sn: "8DC34D20E1021",
   device_id_1:
@@ -12,7 +12,7 @@ const config = {
   device_id_2:
     "04AAC14D19D6184933091188770C419C0FB2D744BF402A8F56C6654A3A9CAA43",
   sig: "",
-  api: "264",
+  api: "263",
 };
 
 const host = new URL(config.url).host;

@@ -4,7 +4,7 @@ import path from "path";
 
 // ⚙️ Configuration
 const config = {
-  url: "http://play.tatasky.xyz",
+  url: "http://tatatv.cc",
   mac: " 00:1A:79:00:13:DA",
   sn: "8DC34D20E1021",
   device_id_1:

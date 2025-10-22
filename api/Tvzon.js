@@ -4,7 +4,7 @@ import path from "path";
 
 // ⚙️ Configuration
 const config = {
-  url: "http://play.tatasky.xyz",
+  url: "http://glen.packetcdn.me:9324",
   mac: " 00:1A:79:00:19:E7",
   sn: "0EAB2E1567B7C",
   device_id_1:

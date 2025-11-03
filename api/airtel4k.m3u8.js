@@ -4,7 +4,7 @@ import path from "path";
 
 // ⚙️ Configuration
 const config = {
-  url: "http://portal.airtel4k.co",
+  url: "http://portal.airtel4k.co:80/stalker_portal/c/",
   mac: "00:1A:79:00:03:66",
   sn: "8D91A0E5388E0",
   device_id_1:
